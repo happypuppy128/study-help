@@ -26,24 +26,28 @@ jobs:
           java-version: "17"
           cache: gradle
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          accept-android-sdk-licenses: true
-          # 【重点】移除platforms，只装构建工具，platform SDK由gradle自动下载
-          packages: |
-            build-tools;34.0.0
-            platform-tools
+      # ========== 删除了整个 setup-android@v3！不再使用这个坏掉的Action ==========
+      - name: Prepare Android SDK directory
+        run: |
+          echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
+          mkdir -p $HOME/Android/Sdk/cmdline-tools/latest
+
+      - name: Download Android cmdline tools
+        run: |
+          cd $HOME/Android/Sdk
+          curl -L https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cli.zip
+          unzip -q cli.zip -d cmdline-tools/latest
+          rm cli.zip
+
+      - name: Accept SDK licenses
+        run: yes | $HOME/Android/Sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager --licenses >/dev/null 2>&1
 
       - name: Verify project files
         run: |
-          test -f settings.gradle.kts || { echo "ERROR: settings.gradle.kts is missing"; exit 1; }
-          test -f build.gradle.kts || { echo "ERROR: build.gradle.kts is missing"; exit 1; }
+          test -f settings.gradle.kts || { echo "ERROR: settings.gradle.kts missing"; exit 1; }
+          test -f build.gradle.kts || { echo "ERROR: build.gradle.kts missing"; exit 1; }
           test -f app/build.gradle.kts || { echo "ERROR: app/build.gradle.kts missing"; exit 1; }
           test -d app/src || { echo "ERROR: app/src folder missing"; exit 1; }
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
 
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
