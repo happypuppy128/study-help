@@ -1,5 +1,4 @@
 name: Build Android APK
-
 on:
   workflow_dispatch:
   push:
@@ -10,10 +9,8 @@ on:
       - "*.gradle.kts"
       - "gradle.properties"
       - ".github/workflows/build-apk.yml"
-
 permissions:
   contents: read
-
 jobs:
   build:
     name: Build debug APK
@@ -32,14 +29,13 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
+          accept-android-sdk-licenses: true  # 关键：自动同意SDK许可协议
           packages: |
             platforms;android-35
             build-tools;35.0.0
             platform-tools
 
-      - name: Install Android SDK packages
-        run: |
-          sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+      # ===== 删除原来多余的 Install Android SDK packages 这一步！=====
 
       - name: Verify project files
         run: |
