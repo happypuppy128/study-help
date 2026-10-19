@@ -29,13 +29,11 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
-          accept-android-sdk-licenses: true  # 关键：自动同意SDK许可协议
+          accept-android-sdk-licenses: true
           packages: |
-            platforms;android-35
-            build-tools;35.0.0
+            platforms;android-34
+            build-tools;34.0.0
             platform-tools
-
-      # ===== 删除原来多余的 Install Android SDK packages 这一步！=====
 
       - name: Verify project files
         run: |
