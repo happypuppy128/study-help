@@ -30,17 +30,17 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           accept-android-sdk-licenses: true
+          # 【重点】移除platforms，只装构建工具，platform SDK由gradle自动下载
           packages: |
-            platforms;android-34
             build-tools;34.0.0
             platform-tools
 
       - name: Verify project files
         run: |
-          test -f settings.gradle.kts || { echo "ERROR: settings.gradle.kts is missing from repository root."; exit 1; }
-          test -f build.gradle.kts || { echo "ERROR: build.gradle.kts is missing from repository root."; exit 1; }
-          test -f app/build.gradle.kts || { echo "ERROR: app/build.gradle.kts is missing. Check that the app folder was uploaded."; exit 1; }
-          test -d app/src || { echo "ERROR: app/src is missing."; exit 1; }
+          test -f settings.gradle.kts || { echo "ERROR: settings.gradle.kts is missing"; exit 1; }
+          test -f build.gradle.kts || { echo "ERROR: build.gradle.kts is missing"; exit 1; }
+          test -f app/build.gradle.kts || { echo "ERROR: app/build.gradle.kts missing"; exit 1; }
+          test -d app/src || { echo "ERROR: app/src folder missing"; exit 1; }
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
