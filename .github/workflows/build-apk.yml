@@ -26,10 +26,10 @@ jobs:
           java-version: "17"
           cache: gradle
 
-      # ========== 删除了整个 setup-android@v3！不再使用这个坏掉的Action ==========
       - name: Prepare Android SDK directory
         run: |
           echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/Android/Sdk" >> $GITHUB_ENV
           mkdir -p $HOME/Android/Sdk/cmdline-tools/latest
 
       - name: Download Android cmdline tools
@@ -39,8 +39,11 @@ jobs:
           unzip -q cli.zip -d cmdline-tools/latest
           rm cli.zip
 
-      - name: Accept SDK licenses
-        run: yes | $HOME/Android/Sdk/cmdline-tools/latest/cmdline-tools/bin/sdkmanager --licenses >/dev/null 2>&1
+      - name: Inject Android SDK licenses
+        run: |
+          mkdir -p $ANDROID_HOME/licenses
+          echo "24333f8a63b6825ea9c5514f83c2829b0097ece1" > $ANDROID_HOME/licenses/android-sdk-license
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
 
       - name: Verify project files
         run: |
