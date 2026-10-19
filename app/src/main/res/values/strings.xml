@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">学习引擎</string>
+    <string name="accessibility_description">仅在你开启专注模式时，检测你自己选中的应用并返回学习引擎。不会读取屏幕文字。</string>
+</resources>
