@@ -30,20 +30,26 @@ jobs:
         run: |
           echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$HOME/Android/Sdk" >> $GITHUB_ENV
-          mkdir -p $HOME/Android/Sdk/cmdline-tools/latest
+          mkdir -p $HOME/Android/Sdk/cmdline-tools
 
       - name: Download Android cmdline tools
         run: |
           cd $HOME/Android/Sdk
           curl -L https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cli.zip
-          unzip -q cli.zip -d cmdline-tools/latest
+          unzip -q cli.zip
+          mv cmdline-tools latest
           rm cli.zip
 
-      - name: Inject Android SDK licenses
+      - name: Inject SDK Licenses
         run: |
           mkdir -p $ANDROID_HOME/licenses
           echo "24333f8a63b6825ea9c5514f83c2829b0097ece1" > $ANDROID_HOME/licenses/android-sdk-license
           echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
+          echo "d975f75198c0d486189d45729a117a47d1b1f514" > $ANDROID_HOME/licenses/android-sdk-arm-dbt-license
+
+      - name: Install Android‑34 and build‑tools 34.0.0
+        run: |
+          $ANDROID_HOME/latest/bin/sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
       - name: Verify project files
         run: |
