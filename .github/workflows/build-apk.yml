@@ -1,15 +1,22 @@
 name: Build Android APK
 
 on:
-  push:
-    branches: ["main", "master"]
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "app/**"
+      - "*.gradle.kts"
+      - "gradle.properties"
+      - ".github/workflows/build-apk.yml"
 
 permissions:
   contents: read
 
 jobs:
   build:
+    name: Build debug APK
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
@@ -19,18 +26,25 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
+          cache: gradle
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install Android SDK packages
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+        run: |
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+
+      - name: Verify project files
+        run: |
+          test -f settings.gradle.kts || { echo "ERROR: settings.gradle.kts is missing from repository root."; exit 1; }
+          test -f build.gradle.kts || { echo "ERROR: build.gradle.kts is missing from repository root."; exit 1; }
+          test -f app/build.gradle.kts || { echo "ERROR: app/build.gradle.kts is missing. Check that the app folder was uploaded."; exit 1; }
+          test -d app/src || { echo "ERROR: app/src is missing."; exit 1; }
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
 
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
